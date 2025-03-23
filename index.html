@@ -398,32 +398,63 @@
         
         // Initialize app
         function initApp() {
-            loadData();
-            updateUI();
-            
-            // Event listeners
-            addBalanceBtn.addEventListener('click', openBalanceModal);
-            addTransactionBtn.addEventListener('click', openTransactionModal);
-            cancelBalanceBtn.addEventListener('click', closeBalanceModal);
-            cancelTransactionBtn.addEventListener('click', closeTransactionModal);
-            balanceForm.addEventListener('submit', handleAddBalance);
-            transactionForm.addEventListener('submit', handleAddTransaction);
-            cancelPaymentBtn.addEventListener('click', closePaymentModal);
-            paymentForm.addEventListener('submit', handlePayment);
-        }
+    // Add offline detection
+    window.addEventListener('offline', function() {
+        console.log('App is offline. Data will be stored locally until connection returns.');
+    });
+    
+    window.addEventListener('online', function() {
+        console.log('App is back online. Syncing data...');
+        saveData();
+    });
+    
+    loadData();
+    updateUI();
+    
+    // Check if the app is already offline when starting
+    if (!navigator.onLine) {
+        console.log('App starting in offline mode. Data will be stored locally.');
+    }
+    
+    // Event listeners
+    addBalanceBtn.addEventListener('click', openBalanceModal);
+    addTransactionBtn.addEventListener('click', openTransactionModal);
+    cancelBalanceBtn.addEventListener('click', closeBalanceModal);
+    cancelTransactionBtn.addEventListener('click', closeTransactionModal);
+    balanceForm.addEventListener('submit', handleAddBalance);
+    transactionForm.addEventListener('submit', handleAddTransaction);
+    cancelPaymentBtn.addEventListener('click', closePaymentModal);
+    paymentForm.addEventListener('submit', handlePayment);
+}
         
         // Load data from localStorage
         function loadData() {
-            const savedData = localStorage.getItem('transactionTrackerData');
-            if (savedData) {
-                appData = JSON.parse(savedData);
-                
-                // Ensure balanceHistory exists (for backward compatibility)
-                if (!appData.balanceHistory) {
-                    appData.balanceHistory = [];
-                }
+    try {
+        const savedData = localStorage.getItem('transactionTrackerData');
+        if (savedData) {
+            appData = JSON.parse(savedData);
+            
+            // Ensure balanceHistory exists (for backward compatibility)
+            if (!appData.balanceHistory) {
+                appData.balanceHistory = [];
+            }
+            
+            // Ensure payments array exists
+            if (!appData.payments) {
+                appData.payments = [];
             }
         }
+    } catch (error) {
+        console.error('Error loading data:', error);
+        // If data is corrupted, reset to defaults
+        appData = {
+            balance: 0,
+            transactions: [],
+            balanceHistory: [],
+            payments: []
+        };
+    }
+}
         function openPaymentModal(transactionId) {
     const transaction = appData.transactions.find(t => t.id === transactionId);
     if (!transaction) return;
@@ -533,8 +564,49 @@ function handlePayment(e) {
 }
         // Save data to localStorage
         function saveData() {
-            localStorage.setItem('transactionTrackerData', JSON.stringify(appData));
+    try {
+        localStorage.setItem('transactionTrackerData', JSON.stringify(appData));
+        return true;
+    } catch (e) {
+        console.error('Error saving to localStorage:', e);
+        
+        // If quota exceeded, try to clear old data
+        if (e.name === 'QuotaExceededError' || e.code === 22) {
+            // Try to compact the data by removing very old transactions
+            compactAppData();
+            try {
+                localStorage.setItem('transactionTrackerData', JSON.stringify(appData));
+                return true;
+            } catch (innerError) {
+                console.error('Still cannot save after compacting:', innerError);
+                return false;
+            }
         }
+        return false;
+    }
+}
+function compactAppData() {
+    // Keep only the last 50 transactions if we have more
+    if (appData.transactions.length > 50) {
+        appData.transactions = appData.transactions
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 50);
+    }
+    
+    // Keep only the last 20 balance history entries
+    if (appData.balanceHistory && appData.balanceHistory.length > 20) {
+        appData.balanceHistory = appData.balanceHistory
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 20);
+    }
+    
+    // Keep only the last 30 payment records
+    if (appData.payments && appData.payments.length > 30) {
+        appData.payments = appData.payments
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 30);
+    }
+}
         
         // Update UI elements
         function updateUI() {
@@ -710,10 +782,47 @@ function handlePayment(e) {
     
     appData.transactions.push(newTransaction);
     
-    saveData();
+    // Save data immediately to ensure offline persistence
+    try {
+        saveData();
+        
+        // Double-check that data was saved successfully
+        const savedData = localStorage.getItem('transactionTrackerData');
+        if (!savedData) {
+            throw new Error('Failed to save data to localStorage');
+        }
+    } catch (error) {
+        console.error('Error saving data:', error);
+        // Fallback: If localStorage fails, keep the transaction in memory
+        // and attempt to save again later
+        setupOfflineRecovery();
+    }
+    
     updateUI();
     closeTransactionModal();
 }
+
+function setupOfflineRecovery() {
+    // Try to save data when the app comes back online
+    window.addEventListener('online', function() {
+        saveData();
+    });
+    
+    // Also try to save data periodically in case localStorage becomes available
+    const recoverySaveInterval = setInterval(function() {
+        try {
+            saveData();
+            // If successful, clear the interval
+            const savedData = localStorage.getItem('transactionTrackerData');
+            if (savedData) {
+                clearInterval(recoverySaveInterval);
+            }
+        } catch (error) {
+            console.error('Recovery save attempt failed:', error);
+        }
+    }, 60000); // Try every minute
+}
+
         
         // Initialize app when DOM is loaded
         document.addEventListener('DOMContentLoaded', initApp);
