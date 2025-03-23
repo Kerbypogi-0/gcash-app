@@ -130,11 +130,11 @@
         }
         
         .cash-in .transaction-amount {
-            color: var(--success-color);
+            color: var(--danger-color); /* Red color for cash-in */
         }
-        
+
         .cash-out .transaction-amount {
-            color: var(--danger-color);
+            color: var(--success-color); /* Green color for cash-out */
         }
         
         .modal {
@@ -488,7 +488,22 @@ function handlePayment(e) {
     
     // Update amountPaid
     transaction.amountPaid += amount;
-        
+    
+    // For borrowed transactions, when payment is made:
+    // If it was a cash-in borrow, add the payment amount to balance (getting money back)
+    // If it was a cash-out borrow, subtract the payment amount from balance (giving money back)
+    if (transaction.type === 'cash-in') {
+        appData.balance += amount; // Getting money back from a cash-in transaction
+    } else if (transaction.type === 'cash-out') {
+        // Check if we have enough balance for this payment
+        if (amount > appData.balance) {
+            alert('Insufficient balance to make this payment');
+            transaction.amountPaid -= amount; // Revert the payment
+            return;
+        }
+        appData.balance -= amount; // Giving money back for a cash-out transaction
+    }
+    
     // Check if fully paid
     if (transaction.amountPaid >= transaction.amount) {
         transaction.status = 'paid'; // Mark as paid
@@ -576,7 +591,7 @@ function handlePayment(e) {
             transactionHTML += `
                 </div>
                 <div class="transaction-amount">
-                    ${transaction.type === 'cash-in' ? '+' : '-'} ${formatCurrency(transaction.amount)}
+                    ${transaction.type === 'cash-in' ? '-' : '+'} ${formatCurrency(transaction.amount)}
                 </div>
             `;
             
@@ -649,9 +664,6 @@ function handlePayment(e) {
         function handleAddTransaction(e) {
     e.preventDefault();
     
-    // Remove the title variable since we're not using it anymore
-    // const title = document.getElementById('transactionTitle').value;
-    
     const amount = parseFloat(document.getElementById('transactionAmount').value);
     const person = document.getElementById('transactionPerson').value;
     const type = document.getElementById('transactionType').value;
@@ -662,17 +674,20 @@ function handlePayment(e) {
         return;
     }
     
-    // If it's a cash out, check if we have enough balance
-    if (type === 'cash-out' && amount > appData.balance) {
-        alert('Insufficient balance for this transaction');
+    // REVERSED LOGIC: 
+    // If it's a cash-in, check if we have enough balance
+    if (type === 'cash-in' && amount > appData.balance) {
+        alert('Insufficient balance. You cannot cash-in more than your available balance.');
         return;
     }
     
-    // Update balance based on transaction type
+    // Update balance based on REVERSED transaction type logic
     if (type === 'cash-in') {
-        appData.balance += amount;
-    } else if (type === 'cash-out') {
+        // Cash-in now DEDUCTS from balance
         appData.balance -= amount;
+    } else if (type === 'cash-out') {
+        // Cash-out now ADDS to balance
+        appData.balance += amount;
     }
     
     // Create a title based on transaction type
@@ -680,14 +695,13 @@ function handlePayment(e) {
     if (type === 'cash-in') {
         title = `Give them this amount ${formatCurrency(amount)} in cash ${amount}`;
     } else {
-        // For cash-out transactions, you can set a default title or leave it empty
         title = `Cash Out`;
     }
     
     // Create transaction
     const newTransaction = {
         id: Date.now(),
-        title, // Automatically generated title
+        title,
         amount,
         person,
         type,
@@ -701,6 +715,7 @@ function handlePayment(e) {
     updateUI();
     closeTransactionModal();
 }
+
         
         // Initialize app when DOM is loaded
         document.addEventListener('DOMContentLoaded', initApp);
