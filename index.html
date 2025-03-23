@@ -674,28 +674,27 @@ function handlePayment(e) {
         return;
     }
     
-    // REVERSED LOGIC: 
     // If it's a cash-in, check if we have enough balance
     if (type === 'cash-in' && amount > appData.balance) {
         alert('Insufficient balance. You cannot cash-in more than your available balance.');
         return;
     }
     
-    // Update balance based on REVERSED transaction type logic
+    // Update balance based on transaction type logic
     if (type === 'cash-in') {
-        // Cash-in now DEDUCTS from balance
+        // Cash-in DEDUCTS from balance
         appData.balance -= amount;
     } else if (type === 'cash-out') {
-        // Cash-out now ADDS to balance
+        // Cash-out ADDS to balance
         appData.balance += amount;
     }
     
     // Create a title based on transaction type
     let title = '';
     if (type === 'cash-in') {
-        title = `Give them this amount ${formatCurrency(amount)} in cash ${amount}`;
+        title = `Cash In`;
     } else {
-        title = `Cash Out`;
+        title = `Give them this amount ${formatCurrency(amount)} in cash`;
     }
     
     // Create transaction
@@ -715,7 +714,6 @@ function handlePayment(e) {
     updateUI();
     closeTransactionModal();
 }
-
         
         // Initialize app when DOM is loaded
         document.addEventListener('DOMContentLoaded', initApp);
