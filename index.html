@@ -3,829 +3,1228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaction Tracker</title>
+    <title>Gcash</title>
     <style>
-        :root {
-            --primary-color: #1976d2;
-            --light-primary: #bbdefb;
-            --dark-primary: #0d47a1;
-            --white: #ffffff;
-            --light-gray: #f5f5f5;
-            --text-color: #333333;
-            --success-color: #4caf50;
-            --danger-color: #f44336;
-            --warning-color: #ff9800;
-            --background-color: #1976d2;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
+
         body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            max-width: 500px;
-            margin: 0 auto;
+            background: linear-gradient(135deg, #0070BA, #005EA6);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 20px;
             position: relative;
-            min-height: 100vh;
         }
-        
-        .app-container {
-            background-color: var(--background-color);
-            min-height: 100vh;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 40px;
+            border-radius: 20px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
         }
-        
-        header {
-            background-color: var(--dark-primary);
-            color: var(--white);
-            padding: 1rem;
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .main-balance {
             text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            padding: 40px 20px;
         }
-        
-        .balance-card {
-            background-color: var(--dark-primary);
-            color: var(--white);
-            padding: 1.5rem;
-            margin: 1rem;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+        .currency-label {
+            font-size: 18px;
+            opacity: 0.8;
+            margin-bottom: 10px;
         }
-        
+
         .balance-amount {
-            font-size: 2rem;
+            font-size: 48px;
             font-weight: bold;
-            margin: 0.5rem 0;
+            margin-bottom: 20px;
         }
-        
+
         .action-buttons {
             display: flex;
             justify-content: space-around;
-            margin: 1rem;
-        }
-        
-        .btn {
-            padding: 0.8rem 1.2rem;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background-color: var(--dark-primary);
-            color: var(--white);
-        }
-        
-        .btn-primary:hover {
-            background-color: #063a8d;
-        }
-        
-        .transactions-section {
-            padding: 1rem;
-            color: var(--white);
-        }
-        
-        .transaction-list {
-            list-style: none;
-            margin-top: 1rem;
-        }
-        
-        .transaction-item {
-            background-color: var(--white);
-            border-left: 5px solid var(--primary-color);
-            margin-bottom: 0.8rem;
-            padding: 1rem;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-color);
-        }
-        
-        .transaction-item.cash-in {
-            border-left-color: var(--success-color);
-        }
-        
-        .transaction-item.cash-out {
-            border-left-color: var(--danger-color);
-        }
-        
-        .transaction-item.borrow {
-            border-left-color: var(--warning-color);
-        }
-        
-        .transaction-amount {
-            font-weight: bold;
-        }
-        
-        .cash-in .transaction-amount {
-            color: var(--danger-color); /* Red color for cash-in */
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .cash-out .transaction-amount {
-            color: var(--success-color); /* Green color for cash-out */
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
-        
-        .modal {
-            display: none;
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+
+        .transactions-card {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 300px;
+            color: #333;
+        }
+
+        .confirm-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            max-width: 90%;
+            width: 300px;
+            text-align: center;
+        }
+
+        .confirm-modal-backdrop {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            align-items: center;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .confirm-modal h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+
+        .confirm-modal p {
+            margin: 0 0 20px 0;
+            color: #666;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 10px;
             justify-content: center;
         }
-        
+
+        .confirm-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .confirm-yes {
+            background: #0070BA;
+            color: white;
+        }
+
+        .confirm-no {
+            background: #DC2626;
+            color: white;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
         .modal-content {
-            background-color: var(--white);
-            padding: 1.5rem;
-            border-radius: 10px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            color: #333;
         }
-        
+
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 15px;
         }
-        
+
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
         }
-        
-        .form-group input, .form-group select {
+
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 0.8rem;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 16px;
         }
-        
-        .modal-actions {
+
+        .modal-button {
+            width: 100%;
+            padding: 12px;
+            background: #0070BA;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .transaction-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .transaction-header {
             display: flex;
             justify-content: space-between;
-            margin-top: 1.5rem;
+            margin-bottom: 5px;
         }
-        
-        .btn-secondary {
-            background-color: #9e9e9e;
-            color: var(--white);
+
+        .transaction-amount {
+            font-weight: bold;
         }
-        
-        .btn-secondary:hover {
-            background-color: #7d7d7d;
+
+        .transaction-amount.negative {
+            color: #DC2626;
         }
-        
-        .transaction-detail {
+
+        .transaction-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 10px;
+            background-color: white;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+        }
+
+        .profile-modal {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .rankings-container {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 80vh;
             display: flex;
             flex-direction: column;
         }
-        
-        .transaction-title {
+
+        .rankings-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.25rem;
             font-weight: bold;
-            margin-bottom: 0.3rem;
+            position: sticky;
+            top: 0;
+            background: white;
         }
-        
-        .transaction-meta {
-            font-size: 0.85rem;
-            color: #757575;
+
+        .rankings-scroll {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin: 0 -20px;
+            padding: 0 20px;
+            scrollbar-width: thin;
+            scrollbar-color: #0070BA #eee;
         }
-        
-        .badge {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border-radius: 50px;
-            font-size: 0.7rem;
+
+        .rankings-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .rankings-scroll::-webkit-scrollbar-track {
+            background: #eee;
+            border-radius: 4px;
+        }
+
+        .rankings-scroll::-webkit-scrollbar-thumb {
+            background: #0070BA;
+            border-radius: 4px;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ranking-position {
             font-weight: bold;
-            margin-left: 0.5rem;
-            color: var(--white);
+            color: #0070BA;
+            margin-right: 10px;
         }
-        
-        .badge-success {
-            background-color: var(--success-color);
+
+        .ranking-details {
+            text-align: right;
         }
-        
-        .badge-warning {
-            background-color: var(--warning-color);
+
+        .ranking-total {
+            font-weight: bold;
+            color: #333;
         }
-        
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: var(--white);
+
+        .ranking-count {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 4px;
         }
-        
+
+        .rankings-footer {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            position: sticky;
+            bottom: 0;
+            background: white;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
         @media (max-width: 400px) {
-            .balance-card {
-                padding: 1rem;
-            }
-            
-            .action-buttons {
+            .transaction-header {
                 flex-direction: column;
-                gap: 0.5rem;
+                align-items: flex-start;
             }
             
-            .btn {
-                width: 100%;
+            .transaction-header > div:last-child {
+                margin-top: 5px;
+            }
+            
+            .modal-button {
+                font-size: 13px !important;
+                padding: 6px !important;
             }
         }
-        .payment-info {
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
-}
-
-.payment-progress, .payment-remaining {
-    margin-bottom: 0.3rem;
-}
-
-.payment-btn {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.75rem;
-    margin-top: 0.3rem;
-}
-
-.payment-details {
-    background-color: var(--light-gray);
-    padding: 0.8rem;
-    border-radius: 5px;
-    margin: 1rem 0;
-    font-size: 0.9rem;
-}
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>G-Cash</h1>
-        </header>
-        
-        <div class="balance-card">
-            <p>Current Balance</p>
-            <div class="balance-amount" id="balanceAmount">₱0.00</div>
+    <div class="top-bar">
+        <div class="profile-icon" onclick="showProfileModal()">JS</div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search transactions..." onkeyup="searchTransactions()">
         </div>
-        
-        <div class="action-buttons">
-            <button class="btn btn-primary" id="addBalanceBtn">Add Balance</button>
-            <button class="btn btn-primary" id="addTransactionBtn">Add Transaction</button>
-        </div>
-        
-        <section class="transactions-section">
-            <h2>Recent Transactions</h2>
-            <div id="transactionsContainer">
-                <ul class="transaction-list" id="transactionsList">
-                    <!-- Transactions will be added here dynamically -->
-                </ul>
-                <div class="empty-state" id="emptyState">
-                    <p>No transactions yet. Add one to get started!</p>
-                </div>
+    </div>
+
+    <div class="main-balance">
+        <div class="currency-label">Main · PHP</div>
+        <div class="balance-amount" id="currentBalance">₱0.00</div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="action-button" onclick="showAddMoneyModal()">
+            <div class="action-icon">+</div>
+            <span>Add money</span>
+        </button>
+        <button class="action-button" onclick="resetBalance()">
+            <div class="action-icon">↻</div>
+            <span>Reset</span>
+        </button>
+        <button class="action-button" onclick="showTransactionModal()">
+            <div class="action-icon">↔</div>
+            <span>Transaction</span>
+        </button>
+        <button class="action-button" onclick="showDetails()">
+            <div class="action-icon">≡</div>
+            <span>Details</span>
+        </button>
+        <button class="action-button" onclick="showRankings()">
+            <div class="action-icon">🏆</div>
+            <span>Rankings</span>
+        </button>
+    </div>
+
+    <div class="transactions-card" id="transactionsList">
+        <div style="text-align: center; color: #666;">No transactions yet</div>
+    </div>
+
+    <!-- Add Money Modal -->
+    <div id="addMoneyModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px;">Set Initial Balance</h2>
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" id="initialBalance" placeholder="Enter amount">
             </div>
-        </section>
-    </div>
-    
-    <!-- Add Balance Modal -->
-    <div class="modal" id="balanceModal">
-        <div class="modal-content">
-            <h2>Add Balance</h2>
-            <form id="balanceForm">
-                <div class="form-group">
-                    <label for="balanceInput">Amount (₱)</label>
-                    <input type="number" id="balanceInput" placeholder="Enter amount" required step="0.01" min="0.01">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelBalanceBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </div>
-            </form>
+            <button class="modal-button" onclick="setInitialBalance()">Set Balance</button>
+            <button class="modal-button" style="background: #DC2626;" onclick="closeModal('addMoneyModal')">Cancel</button>
         </div>
     </div>
-    
-    <!-- Add Transaction Modal -->
-    <div class="modal" id="transactionModal">
+
+    <!-- Transaction Modal -->
+    <div id="transactionModal" class="modal">
         <div class="modal-content">
-            <h2>Add Transaction</h2>
-            <form id="transactionForm">
-                
-                <div class="form-group">
-                    <label for="transactionAmount">Amount (₱)</label>
-                    <input type="number" id="transactionAmount" placeholder="Enter amount" required step="0.01" min="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="transactionPerson">Person</label>
-                    <input type="text" id="transactionPerson" placeholder="Who is involved?">
-                </div>
-                <div class="form-group">
-                    <label for="transactionType">Type</label>
-                    <select id="transactionType" required>
-                        <option value="cash-in">Cash In</option>
-                        <option value="cash-out">Cash Out</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="transactionStatus">Status</label>
-                    <select id="transactionStatus" required>
-                        <option value="paid">Paid</option>
-                        <option value="borrow">Borrow</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelTransactionBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </div>
-            </form>
+            <h2 style="margin-bottom: 20px;">New Transaction</h2>
+            <div class="form-group">
+                <label>Recipient Name</label>
+                <input type="text" id="buyerName" placeholder="Enter recipient name">
+            </div>
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" id="amount" placeholder="Enter amount">
+            </div>
+            <div class="form-group">
+                <label>Transaction Type</label>
+                <select id="transactionType">
+                    <option value="paid">Paid</option>
+                    <option value="borrowed">Borrowed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Cash Flow</label>
+                <select id="cashFlowType">
+                    <option value="cashIn">Cash In</option>
+                    <option value="cashOut">Cash Out</option>
+                </select>
+            </div>
+            <button class="modal-button" onclick="addTransaction()">Add Transaction</button>
+            <button class="modal-button" style="background: #DC2626;" onclick="closeModal('transactionModal')">Cancel</button>
         </div>
     </div>
-    <div class="modal" id="paymentModal">
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
         <div class="modal-content">
-            <h2>Make Payment</h2>
-            <form id="paymentForm">
-                <input type="hidden" id="paymentTransactionId">
-                <div class="form-group">
-                    <label for="paymentAmount">Payment Amount (₱)</label>
-                    <input type="number" id="paymentAmount" placeholder="Enter amount" required step="0.01" min="0.01">
-                </div>
-                <div class="payment-details" id="paymentDetails">
-                    <!-- Payment details will be shown here -->
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelPaymentBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Pay</button>
-                </div>
-            </form>
+            <h2 style="margin-bottom: 20px;">Make Payment</h2>
+            <div class="form-group">
+                <label>Payment Amount</label>
+                <input type="number" id="paymentAmount" placeholder="Enter payment amount">
+            </div>
+            <input type="hidden" id="currentTransactionIndex">
+            <button class="modal-button" onclick="makePayment()">Submit Payment</button>
+            <button class="modal-button" style="background: #DC2626;" onclick="closeModal('paymentModal')">Cancel</button>
         </div>
     </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content profile-modal">
+            <h2 style="margin-bottom: 20px;">Profile Settings</h2>
+            <div class="profile-form">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="profileName" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="profileEmail" placeholder="Enter your email">
+                </div>
+                <button class="modal-button" onclick="saveProfile()">Save Profile</button>
+                <button class="modal-button" style="background: #DC2626;" onclick="closeModal('profileModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rankings Modal -->
+    <div id="rankingsModal" class="modal">
+        <div class="modal-content rankings-container">
+            <h2 class="rankings-title">Transaction Rankings</h2>
+            <div class="rankings-scroll" id="rankingsList"></div>
+            <div class="rankings-footer">
+                <button class="modal-button" onclick="closeModal('rankingsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" style="display: none;">
+        <div class="confirm-modal-backdrop"></div>
+        <div class="confirm-modal">
+            <h3 id="confirmTitle"></h3>
+            <p id="confirmMessage"></p>
+            <div class="confirm-buttons">
+                <button class="confirm-button confirm-yes" id="confirmYes">Yes</button>
+                <button class="confirm-button confirm-no" id="confirmNo">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // DOM Elements
-        const balanceAmount = document.getElementById('balanceAmount');
-        const addBalanceBtn = document.getElementById('addBalanceBtn');
-        const addTransactionBtn = document.getElementById('addTransactionBtn');
-        const balanceModal = document.getElementById('balanceModal');
-        const transactionModal = document.getElementById('transactionModal');
-        const balanceForm = document.getElementById('balanceForm');
-        const transactionForm = document.getElementById('transactionForm');
-        const cancelBalanceBtn = document.getElementById('cancelBalanceBtn');
-        const cancelTransactionBtn = document.getElementById('cancelTransactionBtn');
-        const transactionsList = document.getElementById('transactionsList');
-        const emptyState = document.getElementById('emptyState');
-        const paymentModal = document.getElementById('paymentModal');
-        const paymentForm = document.getElementById('paymentForm');
-        const paymentTransactionId = document.getElementById('paymentTransactionId');
-        const paymentAmount = document.getElementById('paymentAmount');
-        const paymentDetails = document.getElementById('paymentDetails');
-        const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
-        
-        // Data structure
-        let appData = {
-            balance: 0,
-            transactions: [],
-            balanceHistory: [] // Separate array to track balance additions but not show them
+        let currentBalance = 0;
+        let transactions = [];
+        let historicalTransactions = [];
+        let userProfile = {
+            name: '',
+            email: ''
         };
-        
-        // Initialize app
-        function initApp() {
-    // Add offline detection
-    window.addEventListener('offline', function() {
-        console.log('App is offline. Data will be stored locally until connection returns.');
-    });
-    
-    window.addEventListener('online', function() {
-        console.log('App is back online. Syncing data...');
-        saveData();
-    });
-    
-    loadData();
-    updateUI();
-    
-    // Check if the app is already offline when starting
-    if (!navigator.onLine) {
-        console.log('App starting in offline mode. Data will be stored locally.');
-    }
-    
-    // Event listeners
-    addBalanceBtn.addEventListener('click', openBalanceModal);
-    addTransactionBtn.addEventListener('click', openTransactionModal);
-    cancelBalanceBtn.addEventListener('click', closeBalanceModal);
-    cancelTransactionBtn.addEventListener('click', closeTransactionModal);
-    balanceForm.addEventListener('submit', handleAddBalance);
-    transactionForm.addEventListener('submit', handleAddTransaction);
-    cancelPaymentBtn.addEventListener('click', closePaymentModal);
-    paymentForm.addEventListener('submit', handlePayment);
-}
-        
-        // Load data from localStorage
-        function loadData() {
-    try {
-        const savedData = localStorage.getItem('transactionTrackerData');
-        if (savedData) {
-            appData = JSON.parse(savedData);
-            
-            // Ensure balanceHistory exists (for backward compatibility)
-            if (!appData.balanceHistory) {
-                appData.balanceHistory = [];
-            }
-            
-            // Ensure payments array exists
-            if (!appData.payments) {
-                appData.payments = [];
-            }
-        }
-    } catch (error) {
-        console.error('Error loading data:', error);
-        // If data is corrupted, reset to defaults
-        appData = {
-            balance: 0,
-            transactions: [],
-            balanceHistory: [],
-            payments: []
-        };
-    }
-}
-        function openPaymentModal(transactionId) {
-    const transaction = appData.transactions.find(t => t.id === transactionId);
-    if (!transaction) return;
-    
-    paymentTransactionId.value = transactionId;
-    
-    const amountPaid = transaction.amountPaid || 0;
-    const remainingAmount = transaction.amount - amountPaid;
-    
-    // Set max payment to remaining amount
-    paymentAmount.max = remainingAmount;
-    paymentAmount.value = remainingAmount; // Default to full payment
-    
-    // Show payment details
-    paymentDetails.innerHTML = `
-        <p><strong>Transaction:</strong> ${transaction.title}</p>
-        <p><strong>Person:</strong> ${transaction.person || 'Not specified'}</p>
-        <p><strong>Total amount:</strong> ${formatCurrency(transaction.amount)}</p>
-        <p><strong>Already paid:</strong> ${formatCurrency(amountPaid)}</p>
-        <p><strong>Remaining:</strong> ${formatCurrency(remainingAmount)}</p>
-    `;
-    
-    paymentModal.style.display = 'flex';
-}
 
-function closePaymentModal() {
-    paymentModal.style.display = 'none';
-    paymentForm.reset();
-}
+        function roundToTwoDecimals(number) {
+            return Math.floor(number * 100) / 100;
+        }
 
-function handlePayment(e) {
-    e.preventDefault();
-    
-    const transactionId = parseInt(paymentTransactionId.value);
-    const amount = parseFloat(paymentAmount.value);
-    
-    if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid amount');
-        return;
-    }
-    
-    // Find the transaction
-    const transactionIndex = appData.transactions.findIndex(t => t.id === transactionId);
-    if (transactionIndex === -1) {
-        alert('Transaction not found');
-        return;
-    }
-    
-    const transaction = appData.transactions[transactionIndex];
-    
-    // Initialize amountPaid if it doesn't exist
-    if (!transaction.amountPaid) {
-        transaction.amountPaid = 0;
-    }
-    
-    // Check if payment is valid
-    const remainingAmount = transaction.amount - transaction.amountPaid;
-    if (amount > remainingAmount) {
-        alert(`Payment amount cannot exceed the remaining amount of ${formatCurrency(remainingAmount)}`);
-        return;
-    }
-    
-    // Update amountPaid
-    transaction.amountPaid += amount;
-    
-    // For borrowed transactions, when payment is made:
-    // If it was a cash-in borrow, add the payment amount to balance (getting money back)
-    // If it was a cash-out borrow, subtract the payment amount from balance (giving money back)
-    if (transaction.type === 'cash-in') {
-        appData.balance += amount; // Getting money back from a cash-in transaction
-    } else if (transaction.type === 'cash-out') {
-        // Check if we have enough balance for this payment
-        if (amount > appData.balance) {
-            alert('Insufficient balance to make this payment');
-            transaction.amountPaid -= amount; // Revert the payment
-            return;
+        function showAddMoneyModal() {
+            document.getElementById('addMoneyModal').style.display = 'flex';
         }
-        appData.balance -= amount; // Giving money back for a cash-out transaction
-    }
-    
-    // Check if fully paid
-    if (transaction.amountPaid >= transaction.amount) {
-        transaction.status = 'paid'; // Mark as paid
-    }
-    
-    // Add a payment record
-    const paymentRecord = {
-        id: Date.now(),
-        transactionId: transactionId,
-        amount: amount,
-        date: new Date().toISOString()
-    };
-    
-    // Initialize payments array if it doesn't exist
-    if (!appData.payments) {
-        appData.payments = [];
-    }
-    
-    appData.payments.push(paymentRecord);
-    
-    // Update transaction in the array
-    appData.transactions[transactionIndex] = transaction;
-    
-    saveData();
-    updateUI();
-    closePaymentModal();
-}
-        // Save data to localStorage
-        function saveData() {
-    try {
-        localStorage.setItem('transactionTrackerData', JSON.stringify(appData));
-        return true;
-    } catch (e) {
-        console.error('Error saving to localStorage:', e);
-        
-        // If quota exceeded, try to clear old data
-        if (e.name === 'QuotaExceededError' || e.code === 22) {
-            // Try to compact the data by removing very old transactions
-            compactAppData();
-            try {
-                localStorage.setItem('transactionTrackerData', JSON.stringify(appData));
-                return true;
-            } catch (innerError) {
-                console.error('Still cannot save after compacting:', innerError);
-                return false;
-            }
+
+        function showTransactionModal() {
+            document.getElementById('transactionModal').style.display = 'flex';
         }
-        return false;
-    }
-}
-function compactAppData() {
-    // Keep only the last 50 transactions if we have more
-    if (appData.transactions.length > 50) {
-        appData.transactions = appData.transactions
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 50);
-    }
-    
-    // Keep only the last 20 balance history entries
-    if (appData.balanceHistory && appData.balanceHistory.length > 20) {
-        appData.balanceHistory = appData.balanceHistory
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 20);
-    }
-    
-    // Keep only the last 30 payment records
-    if (appData.payments && appData.payments.length > 30) {
-        appData.payments = appData.payments
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 30);
-    }
-}
-        
-        // Update UI elements
-        function updateUI() {
-    // Update balance
-    balanceAmount.textContent = formatCurrency(appData.balance);
-    
-    // Update transactions list
-    transactionsList.innerHTML = '';
-    
-    if (appData.transactions.length === 0) {
-        emptyState.style.display = 'block';
-    } else {
-        emptyState.style.display = 'none';
-        
-        // Sort transactions by date (newest first)
-        const sortedTransactions = [...appData.transactions].sort((a, b) => {
-            return new Date(b.date) - new Date(a.date);
-        });
-        
-        sortedTransactions.forEach(transaction => {
-            const listItem = document.createElement('li');
-            listItem.className = `transaction-item ${transaction.type} ${transaction.status === 'borrow' ? 'borrow' : ''}`;
-            
-            const dateObj = new Date(transaction.date);
-            const formattedDate = `${dateObj.toLocaleDateString()} at ${dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            
-            // Basic transaction details
-            let transactionHTML = `
-                <div class="transaction-detail">
-                    <div class="transaction-title">${transaction.title}</div>
-                    <div class="transaction-meta">
-                        ${transaction.person ? `With: ${transaction.person} • ` : ''}
-                        ${formattedDate}
-                        ${transaction.status === 'borrow' ? '<span class="badge badge-warning">Borrow</span>' : ''}
-                        ${transaction.status === 'paid' ? '<span class="badge badge-success">Paid</span>' : ''}
-                    </div>
-            `;
-            
-            // Add payment info if this is a borrowed transaction
-            if (transaction.status === 'borrow') {
-                // Track amounts paid if it exists
-                const amountPaid = transaction.amountPaid || 0;
-                const remainingAmount = transaction.amount - amountPaid;
-                
-                transactionHTML += `
-                    <div class="payment-info">
-                        <div class="payment-progress">Paid: ${formatCurrency(amountPaid)} / ${formatCurrency(transaction.amount)}</div>
-                        <div class="payment-remaining">Remaining: ${formatCurrency(remainingAmount)}</div>
-                        ${remainingAmount > 0 ? `<button class="btn btn-primary payment-btn" data-id="${transaction.id}">Make Payment</button>` : ''}
-                    </div>
-                `;
-            }
-            
-            transactionHTML += `
-                </div>
-                <div class="transaction-amount">
-                    ${transaction.type === 'cash-in' ? '-' : '+'} ${formatCurrency(transaction.amount)}
-                </div>
-            `;
-            
-            listItem.innerHTML = transactionHTML;
-            transactionsList.appendChild(listItem);
-            
-            // Add event listener for payment buttons
-            if (transaction.status === 'borrow' && (transaction.amount - (transaction.amountPaid || 0)) > 0) {
-                const payButton = listItem.querySelector('.payment-btn');
-                if (payButton) {
-                    payButton.addEventListener('click', () => openPaymentModal(transaction.id));
-                }
-            }
-        });
-    }
-}
-        
-        // Format currency
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showNotification(message, type = 'error') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.backgroundColor = type === 'error' ? '#FEE2E2' : '#D1FAE5';
+            notification.style.color = type === 'error' ? '#DC2626' : '#059669';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
         function formatCurrency(amount) {
-            return `₱${parseFloat(amount).toFixed(2)}`;
+            return '₱' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
-        
-        // Modal functions
-        function openBalanceModal() {
-            balanceModal.style.display = 'flex';
+
+        function updateBalanceDisplay() {
+            document.getElementById('currentBalance').textContent = formatCurrency(currentBalance);
         }
-        
-        function closeBalanceModal() {
-            balanceModal.style.display = 'none';
-            balanceForm.reset();
+
+        function showConfirmation(title, message, onConfirm) {
+            const modal = document.getElementById('confirmationModal');
+            const titleEl = document.getElementById('confirmTitle');
+            const messageEl = document.getElementById('confirmMessage');
+            const yesBtn = document.getElementById('confirmYes');
+            const noBtn = document.getElementById('confirmNo');
+
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            modal.style.display = 'block';
+
+            yesBtn.onclick = () => {
+                modal.style.display = 'none';
+                onConfirm();
+            };
+
+            noBtn.onclick = () => {
+                modal.style.display = 'none';
+            };
+
+            // Close on backdrop click
+            modal.querySelector('.confirm-modal-backdrop').onclick = () => {
+                modal.style.display = 'none';
+            };
         }
-        
-        function openTransactionModal() {
-            transactionModal.style.display = 'flex';
-        }
-        
-        function closeTransactionModal() {
-            transactionModal.style.display = 'none';
-            transactionForm.reset();
-        }
-        
-        // Handle form submissions
-        function handleAddBalance(e) {
-            e.preventDefault();
+
+        function setInitialBalance() {
+            const amount = parseFloat(document.getElementById('initialBalance').value);
             
-            const balanceInput = document.getElementById('balanceInput');
-            const amount = parseFloat(balanceInput.value);
-            
-            if (isNaN(amount) || amount <= 0) {
-                alert('Please enter a valid amount');
+            if (isNaN(amount) || amount < 0) {
+                showNotification('Please enter a valid amount', 'error');
                 return;
             }
-            
-            appData.balance += amount;
-            
-            // Add to balanceHistory but not to transactions list
-            const balanceEntry = {
-                id: Date.now(),
-                amount: amount,
-                date: new Date().toISOString()
-            };
-            
-            appData.balanceHistory.push(balanceEntry);
-            
-            saveData();
-            updateUI();
-            closeBalanceModal();
-        }
-        
-        function handleAddTransaction(e) {
-    e.preventDefault();
-    
-    const amount = parseFloat(document.getElementById('transactionAmount').value);
-    const person = document.getElementById('transactionPerson').value;
-    const type = document.getElementById('transactionType').value;
-    const status = document.getElementById('transactionStatus').value;
-    
-    if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid amount');
-        return;
-    }
-    
-    // If it's a cash-in, check if we have enough balance
-    if (type === 'cash-in' && amount > appData.balance) {
-        alert('Insufficient balance. You cannot cash-in more than your available balance.');
-        return;
-    }
-    
-    // Update balance based on transaction type logic
-    if (type === 'cash-in') {
-        // Cash-in DEDUCTS from balance
-        appData.balance -= amount;
-    } else if (type === 'cash-out') {
-        // Cash-out ADDS to balance
-        appData.balance += amount;
-    }
-    
-    // Create a title based on transaction type
-    let title = '';
-    if (type === 'cash-in') {
-        title = `Cash In`;
-    } else {
-        title = `Give them this amount ${formatCurrency(amount)} in cash`;
-    }
-    
-    // Create transaction
-    const newTransaction = {
-        id: Date.now(),
-        title,
-        amount,
-        person,
-        type,
-        status,
-        date: new Date().toISOString()
-    };
-    
-    appData.transactions.push(newTransaction);
-    
-    // Save data immediately to ensure offline persistence
-    try {
-        saveData();
-        
-        // Double-check that data was saved successfully
-        const savedData = localStorage.getItem('transactionTrackerData');
-        if (!savedData) {
-            throw new Error('Failed to save data to localStorage');
-        }
-    } catch (error) {
-        console.error('Error saving data:', error);
-        // Fallback: If localStorage fails, keep the transaction in memory
-        // and attempt to save again later
-        setupOfflineRecovery();
-    }
-    
-    updateUI();
-    closeTransactionModal();
-}
 
-function setupOfflineRecovery() {
-    // Try to save data when the app comes back online
-    window.addEventListener('online', function() {
-        saveData();
-    });
-    
-    // Also try to save data periodically in case localStorage becomes available
-    const recoverySaveInterval = setInterval(function() {
-        try {
-            saveData();
-            // If successful, clear the interval
-            const savedData = localStorage.getItem('transactionTrackerData');
-            if (savedData) {
-                clearInterval(recoverySaveInterval);
+            // Get active borrowed transactions
+            const activeBorrowed = getActiveBorrowedTransactions();
+            
+            // Calculate total borrowed amount
+            const totalBorrowed = activeBorrowed.reduce((sum, t) => sum + t.remainingAmount, 0);
+            
+            // Check if new balance can cover borrowed amounts
+            if (amount < totalBorrowed) {
+                showNotification(
+                    `New balance must be at least ${formatCurrency(totalBorrowed)} to cover existing borrowed amounts`,
+                    'error'
+                );
+                return;
             }
-        } catch (error) {
-            console.error('Recovery save attempt failed:', error);
-        }
-    }, 60000); // Try every minute
-}
 
+            // If there's already a balance, show confirmation dialog
+            if (currentBalance > 0) {
+                showConfirmation(
+                    'Confirm New Balance',
+                    `Are you sure you want to set a new balance of ${formatCurrency(amount)}? Current transactions will be archived.`,
+                    () => {
+                        // Save non-borrowed transactions to history
+                        if (transactions.length > 0) {
+                            const nonBorrowedTransactions = transactions.filter(t => 
+                                t.type !== 'borrowed' || t.remainingAmount === 0
+                            );
+                            
+                            if (nonBorrowedTransactions.length > 0) {
+                                const currentBatch = {
+                                    date: new Date().toLocaleString(),
+                                    initialBalance: currentBalance,
+                                    transactions: nonBorrowedTransactions
+                                };
+                                historicalTransactions.unshift(currentBatch);
+                            }
+                        }
+                        
+                        // Keep active borrowed transactions
+                        transactions = activeBorrowed;
+                        currentBalance = amount;
+                        updateBalanceDisplay();
+                        document.getElementById('initialBalance').value = '';
+                        closeModal('addMoneyModal');
+                        
+                        if (activeBorrowed.length > 0) {
+                            showNotification(
+                                `New balance set with ${activeBorrowed.length} borrowed transaction(s) retained`,
+                                'success'
+                            );
+                        } else {
+                            showNotification('Balance set successfully', 'success');
+                        }
+                        
+                        updateTransactionsList();
+                        saveData();
+                    }
+                );
+            } else {
+                showConfirmation(
+                    'Confirm Initial Balance',
+                    `Are you sure you want to set an initial balance of ${formatCurrency(amount)}?`,
+                    () => {
+                        // Keep active borrowed transactions
+                        transactions = activeBorrowed;
+                        currentBalance = amount;
+                        updateBalanceDisplay();
+                        document.getElementById('initialBalance').value = '';
+                        closeModal('addMoneyModal');
+                        
+                        if (activeBorrowed.length > 0) {
+                            showNotification(
+                                `Initial balance set with ${activeBorrowed.length} borrowed transaction(s) retained`,
+                                'success'
+                            );
+                        } else {
+                            showNotification('Initial balance set successfully', 'success');
+                        }
+                        
+                        updateTransactionsList();
+                        saveData();
+                    }
+                );
+            }
+        }
+
+        function resetBalance() {
+            showConfirmation(
+                'Confirm Reset',
+                'Are you sure you want to reset your balance? Current transactions will be archived.',
+                () => {
+                    showConfirmation(
+                        'Final Confirmation',
+                        'This action cannot be undone. Do you really want to proceed?',
+                        () => {
+                            // Get active borrowed transactions before reset
+                            const activeBorrowed = getActiveBorrowedTransactions();
+                            
+                            // Save non-borrowed transactions to historical transactions
+                            if (transactions.length > 0) {
+                                const nonBorrowedTransactions = transactions.filter(t => 
+                                    t.type !== 'borrowed' || t.remainingAmount === 0
+                                );
+                                
+                                if (nonBorrowedTransactions.length > 0) {
+                                    const currentBatch = {
+                                        date: new Date().toLocaleString(),
+                                        initialBalance: currentBalance,
+                                        transactions: nonBorrowedTransactions
+                                    };
+                                    historicalTransactions.unshift(currentBatch);
+                                }
+                            }
+
+                            // Reset current balance
+                            currentBalance = 0;
+                            
+                            // Clear current transactions but keep active borrowed ones
+                            transactions = activeBorrowed;
+
+                            // Update UI
+                            updateBalanceDisplay();
+                            updateTransactionsList();
+                            saveData();
+                            showNotification('Balance has been reset successfully', 'success');
+
+                            // If there are active borrowed transactions, show a notification
+                            if (activeBorrowed.length > 0) {
+                                showNotification(
+                                    `${activeBorrowed.length} borrowed transaction(s) retained`,
+                                    'success'
+                                );
+                            }
+
+                            // Ask if they want to set new balance
+                            showConfirmation(
+                                'Set New Balance',
+                                'Would you like to set a new balance now?',
+                                () => {
+                                    showAddMoneyModal();
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+
+        function getActiveBorrowedTransactions() {
+            // Get borrowed transactions from current transactions
+            const currentBorrowed = transactions.filter(t => 
+                t.type === 'borrowed' && t.remainingAmount > 0
+            );
+            
+            // Get borrowed transactions from historical transactions
+            const historicalBorrowed = historicalTransactions.flatMap(batch => 
+                batch.transactions.filter(t => 
+                    t.type === 'borrowed' && t.remainingAmount > 0
+                )
+            );
+            
+            return [...currentBorrowed, ...historicalBorrowed];
+        }
+
+        function addTransaction() {
+            const buyerName = document.getElementById('buyerName').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+            const type = document.getElementById('transactionType').value;
+            const cashFlowType = document.getElementById('cashFlowType').value;
+
+            if (!buyerName) {
+                showNotification('Please enter a recipient name', 'error');
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            // For Cash In (deduct from balance), check if transaction amount exceeds current balance
+            if (cashFlowType === 'cashIn' && amount > currentBalance) {
+                showNotification(`Insufficient balance. Current balance: ${formatCurrency(currentBalance)}`, 'error');
+                return;
+            }
+
+            const transaction = {
+                buyerName,
+                amount,
+                date: new Date().toLocaleString(),
+                type,
+                cashFlowType, // Store the cash flow type
+                remainingAmount: type === 'borrowed' ? amount : 0
+            };
+
+            transactions.unshift(transaction);
+            
+            // Update balance based on cash flow type
+            if (cashFlowType === 'cashIn') {
+                // Cash In: Subtract amount from balance
+                currentBalance = currentBalance - amount;
+            } else {
+                // Cash Out: Add amount to balance
+                currentBalance = currentBalance + amount;
+            }
+            
+            updateBalanceDisplay();
+            updateTransactionsList();
+            closeModal('transactionModal');
+            
+            document.getElementById('buyerName').value = '';
+            document.getElementById('amount').value = '';
+            document.getElementById('transactionType').selectedIndex = 0;
+            document.getElementById('cashFlowType').selectedIndex = 0;
+            
+            showNotification('Transaction added successfully', 'success');
+            saveData();
+        }
+
+        function showPaymentModal(transactionIndex) {
+            const transaction = transactions[transactionIndex];
+            document.getElementById('currentTransactionIndex').value = transactionIndex;
+            document.getElementById('paymentAmount').value = transaction.remainingAmount;
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function makePayment() {
+            const transactionIndex = parseInt(document.getElementById('currentTransactionIndex').value);
+            const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+            const transaction = transactions[transactionIndex];
+
+            if (isNaN(paymentAmount) || paymentAmount <= 0) {
+                showNotification('Please enter a valid payment amount', 'error');
+                return;
+            }
+
+            if (paymentAmount > transaction.remainingAmount) {
+                showNotification('Payment amount cannot exceed remaining balance', 'error');
+                return;
+            }
+
+            // Update the transaction
+            transaction.remainingAmount -= paymentAmount;
+            
+            // If fully paid, update the type
+            if (transaction.remainingAmount === 0) {
+                transaction.type = 'paid';
+                transaction.fullyPaidDate = new Date().toLocaleString();
+            }
+
+            // Add payment to the transaction's payment history if it doesn't exist
+            if (!transaction.payments) {
+                transaction.payments = [];
+            }
+            
+            transaction.payments.push({
+                amount: paymentAmount,
+                date: new Date().toLocaleString()
+            });
+
+            // Update UI and save
+            updateTransactionsList();
+            saveData();
+            closeModal('paymentModal');
+            showNotification('Payment recorded successfully', 'success');
+        }
+
+        function deleteTransaction(index) {
+            // Ask for confirmation before deleting
+            showConfirmation(
+                'Delete Transaction',
+                'Are you sure you want to delete this transaction? The amount will be returned/removed from your balance.',
+                () => {
+                    const transaction = transactions[index];
+                    
+                    // If it's a borrowed transaction
+                    if (transaction.type === 'borrowed' && transaction.remainingAmount > 0) {
+                        // Return only the remaining amount to the balance or deduct from balance
+                        if (transaction.cashFlowType === 'cashIn') {
+                            // Cash In: Return the remaining amount
+                            currentBalance += transaction.remainingAmount;
+                        } else {
+                            // Cash Out: Deduct the remaining amount
+                            currentBalance -= transaction.remainingAmount;
+                        }
+                    } 
+                    // If it's a paid transaction or fully paid borrowed transaction
+                    else {
+                        // Return the full amount to the balance or deduct from balance
+                        if (transaction.cashFlowType === 'cashIn') {
+                            // Cash In: Return the amount
+                            currentBalance += transaction.amount;
+                        } else {
+                            // Cash Out: Deduct the amount
+                            currentBalance -= transaction.amount;
+                        }
+                    }
+                    
+                    // Remove the transaction from the array
+                    transactions.splice(index, 1);
+                    
+                    // Update the UI
+                    updateBalanceDisplay();
+                    updateTransactionsList();
+                    saveData();
+                    
+                    showNotification('Transaction deleted successfully', 'success');
+                }
+            );
+        }
+
+        function updateTransactionsList(filteredTransactions = transactions) {
+            const transactionsList = document.getElementById('transactionsList');
+            
+            if (filteredTransactions.length === 0) {
+                transactionsList.innerHTML = '<div style="text-align: center; color: #666;">No transactions yet</div>';
+                return;
+            }
+
+            transactionsList.innerHTML = filteredTransactions.map((transaction, index) => `
+                <div class="transaction-item">
+                    <div class="transaction-header">
+                        <div>${transaction.buyerName}</div>
+                        <div>
+                            <div class="transaction-amount ${transaction.cashFlowType === 'cashIn' ? 'negative' : ''}">
+                                ${transaction.cashFlowType === 'cashIn' ? '-' : '+'} ${formatCurrency(transaction.amount)}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="transaction-date">${transaction.date}</div>
+                    <div style="color: ${transaction.type === 'paid' ? '#059669' : '#DC2626'}">
+                        ${transaction.type === 'paid' ? 'Paid' : 'Borrowed'} · 
+                        ${transaction.cashFlowType === 'cashIn' ? 'Cash In' : 'Cash Out'}
+                    </div>
+                    ${transaction.type === 'borrowed' && transaction.remainingAmount > 0 ? `
+                        <div style="margin-top: 10px;">
+                            <div>Remaining: ${formatCurrency(transaction.remainingAmount)}</div>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <button 
+                                    class="modal-button" 
+                                    style="flex: 1; padding: 8px; font-size: 14px;"
+                                    onclick="showPaymentModal(${index})"
+                                >
+                                    Make Payment
+                                </button>
+                                <button 
+                                    class="modal-button" 
+                                    style="flex: 1; padding: 8px; background: #DC2626; font-size: 14px;"
+                                    onclick="deleteTransaction(${index})"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="margin-top: 10px;">
+                            <button 
+                                class="modal-button" 
+                                style="width: 100%; padding: 8px; background: #DC2626; font-size: 14px;"
+                                onclick="deleteTransaction(${index})"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    `}
+                </div>
+            `).join('');
+        }
+        function showProfileModal() {
+            document.getElementById('profileModal').style.display = 'flex';
+            document.getElementById('profileName').value = userProfile.name;
+            document.getElementById('profileEmail').value = userProfile.email;
+        }
+
+    function saveProfile() {
+        userProfile.name = document.getElementById('profileName').value;
+        userProfile.email = document.getElementById('profileEmail').value;
         
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
+        // Set icon text based on user's name (first letter of first and last name)
+        updateProfileIcon();
+        
+        // Save to local storage
+        saveData();
+        closeModal('profileModal');
+        showNotification('Profile saved successfully', 'success');
+    }
+
+    function updateProfileIcon() {
+        const profileIcon = document.querySelector('.profile-icon');
+        if (userProfile.name) {
+            const nameParts = userProfile.name.split(' ');
+            if (nameParts.length > 1) {
+                profileIcon.textContent = nameParts[0][0] + nameParts[nameParts.length - 1][0];
+            } else {
+                profileIcon.textContent = nameParts[0][0];
+            }
+        } else {
+            profileIcon.textContent = 'JS'; // Default
+        }
+    }
+
+    function searchTransactions() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        if (!searchTerm) {
+            updateTransactionsList(); // Show all transactions
+            return;
+        }
+
+        const filtered = transactions.filter(transaction => 
+            transaction.buyerName.toLowerCase().includes(searchTerm) || 
+            transaction.amount.toString().includes(searchTerm) ||
+            transaction.date.toLowerCase().includes(searchTerm)
+        );
+
+        updateTransactionsList(filtered);
+    }
+
+    function showDetails() {
+        // Create a modal with transaction history and charts
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        
+        const transactionCount = transactions.length;
+        const totalPaid = transactions
+            .filter(t => t.type === 'paid')
+            .reduce((sum, t) => sum + t.amount, 0);
+        const totalBorrowed = transactions
+            .filter(t => t.type === 'borrowed')
+            .reduce((sum, t) => sum + t.amount, 0);
+        const activeBorrowed = transactions
+            .filter(t => t.type === 'borrowed' && t.remainingAmount > 0)
+            .reduce((sum, t) => sum + t.remainingAmount, 0);
+
+        // Create historical details
+        let historicalHTML = '';
+        if (historicalTransactions.length > 0) {
+            historicalHTML = `
+                <h3 style="margin-top: 20px;">Historical Transactions</h3>
+                <div style="max-height: 200px; overflow-y: auto; margin-top: 10px;">
+                    ${historicalTransactions.map((batch, index) => `
+                        <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+                            <div><strong>Date:</strong> ${batch.date}</div>
+                            <div><strong>Initial Balance:</strong> ${formatCurrency(batch.initialBalance)}</div>
+                            <div><strong>Transactions:</strong> ${batch.transactions.length}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <h2 style="margin-bottom: 20px;">Transaction Details</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <div style="background: #f0f9ff; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 14px; color: #666;">Current Balance</div>
+                        <div style="font-size: 20px; font-weight: bold;">${formatCurrency(currentBalance)}</div>
+                    </div>
+                    <div style="background: #f0f9ff; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 14px; color: #666;">Transactions</div>
+                        <div style="font-size: 20px; font-weight: bold;">${transactionCount}</div>
+                    </div>
+                    <div style="background: #f0f9ff; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 14px; color: #666;">Total Paid</div>
+                        <div style="font-size: 20px; font-weight: bold;">${formatCurrency(totalPaid)}</div>
+                    </div>
+                    <div style="background: #f0f9ff; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 14px; color: #666;">Active Borrowed</div>
+                        <div style="font-size: 20px; font-weight: bold;">${formatCurrency(activeBorrowed)}</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3>Transaction Analysis</h3>
+                    <canvas id="transactionChart" width="400" height="200"></canvas>
+                </div>
+
+                ${historicalHTML}
+                
+                <button class="modal-button" style="margin-top: 20px;" onclick="this.parentElement.parentElement.remove()">
+                    Close
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Create chart
+        setTimeout(() => {
+            const ctx = document.getElementById('transactionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Total Paid', 'Total Borrowed', 'Active Borrowed'],
+                    datasets: [{
+                        label: 'Transaction Amounts',
+                        data: [totalPaid, totalBorrowed, activeBorrowed],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }, 100);
+    }
+
+    function showRankings() {
+        // Get all transaction recipients
+        const recipients = {};
+        
+        // Process current transactions
+        transactions.forEach(transaction => {
+            const name = transaction.buyerName;
+            if (!recipients[name]) {
+                recipients[name] = {
+                    totalAmount: 0,
+                    count: 0
+                };
+            }
+            recipients[name].totalAmount += transaction.amount;
+            recipients[name].count++;
+        });
+        
+        // Process historical transactions
+        historicalTransactions.forEach(batch => {
+            batch.transactions.forEach(transaction => {
+                const name = transaction.buyerName;
+                if (!recipients[name]) {
+                    recipients[name] = {
+                        totalAmount: 0,
+                        count: 0
+                    };
+                }
+                recipients[name].totalAmount += transaction.amount;
+                recipients[name].count++;
+            });
+        });
+        
+        // Convert to array and sort by total amount
+        const rankingsArray = Object.keys(recipients).map(name => ({
+            name,
+            totalAmount: recipients[name].totalAmount,
+            count: recipients[name].count
+        })).sort((a, b) => b.totalAmount - a.totalAmount);
+        
+        // Display rankings in modal
+        const rankingsList = document.getElementById('rankingsList');
+        rankingsList.innerHTML = rankingsArray.map((item, index) => `
+            <div class="ranking-item">
+                <div>
+                    <span class="ranking-position">#${index + 1}</span>
+                    <span>${item.name}</span>
+                </div>
+                <div class="ranking-details">
+                    <div class="ranking-total">${formatCurrency(item.totalAmount)}</div>
+                    <div class="ranking-count">${item.count} transaction${item.count !== 1 ? 's' : ''}</div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('rankingsModal').style.display = 'flex';
+    }
+
+    function saveData() {
+        localStorage.setItem('gcashAppBalance', currentBalance);
+        localStorage.setItem('gcashAppTransactions', JSON.stringify(transactions));
+        localStorage.setItem('gcashAppHistoricalTransactions', JSON.stringify(historicalTransactions));
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    }
+
+    function loadData() {
+        // Load balance
+        const savedBalance = localStorage.getItem('gcashAppBalance');
+        if (savedBalance !== null) {
+            currentBalance = parseFloat(savedBalance);
+            updateBalanceDisplay();
+        }
+        
+        // Load transactions
+        const savedTransactions = localStorage.getItem('gcashAppTransactions');
+        if (savedTransactions) {
+            transactions = JSON.parse(savedTransactions);
+            updateTransactionsList();
+        }
+        
+        // Load historical transactions
+        const savedHistorical = localStorage.getItem('gcashAppHistoricalTransactions');
+        if (savedHistorical) {
+            historicalTransactions = JSON.parse(savedHistorical);
+        }
+        
+        // Load user profile
+        const savedProfile = localStorage.getItem('userProfile');
+        if (savedProfile) {
+            userProfile = JSON.parse(savedProfile);
+            updateProfileIcon();
+        }
+    }
+
+    // Initialize on page load
+    window.onload = function() {
+        loadData();
+    };
+</script>
 </body>
 </html>
